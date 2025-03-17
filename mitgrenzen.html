@@ -47,8 +47,8 @@
 			gv_options.map_type = 'GV_OSM_RELIEF';  // popular map_type choices are 'GV_STREET', 'GV_SATELLITE', 'GV_HYBRID', 'GV_TERRAIN', 'GV_OSM', 'GV_TOPO_US', 'GV_TOPO_WORLD' (https://www.gpsvisualizer.com/misc/leaflet_map_types.html)
 			gv_options.map_opacity = 1.00;  // number from 0 to 1
 			gv_options.full_screen = true;  // true|false: should the map fill the entire page (or frame)?
-			gv_options.width = 700;  // width of the map, in pixels
-			gv_options.height = 350;  // height of the map, in pixels
+			// Entfernt: gv_options.width = 700;
+			// Entfernt: gv_options.height = 350;
 			
 			gv_options.map_div = 'gmap_div';  // the name of the HTML "div" tag containing the map itself; usually 'gmap_div'
 			gv_options.doubleclick_zoom = true;  // true|false: zoom in when mouse is double-clicked?
@@ -179,48 +179,64 @@
 			function GV_Map() {
 				GV_Setup_Map();
 
-				// Speichere die Karte in einer globalen Variable
-				window.gvMap = map; // 'map' wird von GV_Setup_Map erstellt
+				// Warte kurz, um sicherzustellen, dass die Karte initialisiert ist
+				setTimeout(() => {
+					// Speichere die Karte in einer globalen Variable
+					if (typeof map !== 'undefined') {
+						window.gvMap = map;
+						console.log('Karte erfolgreich initialisiert:', window.gvMap);
+					} else {
+						console.error('Karte konnte nicht initialisiert werden: "map" ist nicht definiert.');
+						return;
+					}
 
-				// Deine bestehenden Marker hinzufügen
-				GV_Draw_Marker({lat:49.1943634,lon:7.9806260,name:'1057',desc:'Trifelsstraße 72 76655 Leinsweiggfler',label:'1057',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1547455,lon:8.2543660,name:'1063',desc:'Knittelsheimer Weg 9 76863 Herxheimweyher',label:'1063',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1492999,lon:8.2324568,name:'1064',desc:'Im Riegel 6 76863 Herxheim bei Landau/Pfalz',label:'1064',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1371159,lon:8.2169607,name:'1065',desc:'Sankt-Christophorus-Straße 1 76863 Herxheim bei Landau/Pfalz',label:'1065',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1223042,lon:8.2049761,name:'1068',desc:'Kapellenweg 5 76863 Herxheim bei Landau/Pfalz',label:'1068',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1406766,lon:8.2077456,name:'1069',desc:'Albert-Detzel-Straße 52 76863 Herxheim bei Landau/Pfalz',label:'1069',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1449457,lon:8.2165599,name:'1070',desc:'Leonhard-Peters-Straße 2 76863 Herxheim bei Landau/Pfalz',label:'1070',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1521455,lon:8.2173415,name:'1071',desc:'Speyerer Straße 27 76863 Herxheim bei Landau/Pfalz',label:'1071',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1498631,lon:8.2179498,name:'1072',desc:'Bussereaustraße 25 76863 Herxheim bei Landau/Pfalz',label:'1072',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1501567,lon:8.2052762,name:'1073',desc:'Am Herrenweg 1 76863 Herxheim bei Landau/Pfalz',label:'1073',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1530306,lon:8.2062888,name:'1074',desc:'Industriestraße 1 76863 Herxheim bei Landau/Pfalz',label:'1074',color:'',icon:''});
-				GV_Draw_Marker({lat:49.1576647,lon:8.1525241,name:'1075',desc:'Sonnenhof 76865 Insheim',label:'1075',color:'',icon:''});
+					// Deine bestehenden Marker hinzufügen
+					GV_Draw_Marker({lat:49.1943634,lon:7.9806260,name:'1057',desc:'Trifelsstraße 72 76655 Leinsweiggfler',label:'1057',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1547455,lon:8.2543660,name:'1063',desc:'Knittelsheimer Weg 9 76863 Herxheimweyher',label:'1063',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1492999,lon:8.2324568,name:'1064',desc:'Im Riegel 6 76863 Herxheim bei Landau/Pfalz',label:'1064',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1371159,lon:8.2169607,name:'1065',desc:'Sankt-Christophorus-Straße 1 76863 Herxheim bei Landau/Pfalz',label:'1065',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1223042,lon:8.2049761,name:'1068',desc:'Kapellenweg 5 76863 Herxheim bei Landau/Pfalz',label:'1068',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1406766,lon:8.2077456,name:'1069',desc:'Albert-Detzel-Straße 52 76863 Herxheim bei Landau/Pfalz',label:'1069',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1449457,lon:8.2165599,name:'1070',desc:'Leonhard-Peters-Straße 2 76863 Herxheim bei Landau/Pfalz',label:'1070',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1521455,lon:8.2173415,name:'1071',desc:'Speyerer Straße 27 76863 Herxheim bei Landau/Pfalz',label:'1071',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1498631,lon:8.2179498,name:'1072',desc:'Bussereaustraße 25 76863 Herxheim bei Landau/Pfalz',label:'1072',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1501567,lon:8.2052762,name:'1073',desc:'Am Herrenweg 1 76863 Herxheim bei Landau/Pfalz',label:'1073',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1530306,lon:8.2062888,name:'1074',desc:'Industriestraße 1 76863 Herxheim bei Landau/Pfalz',label:'1074',color:'',icon:''});
+					GV_Draw_Marker({lat:49.1576647,lon:8.1525241,name:'1075',desc:'Sonnenhof 76865 Insheim',label:'1075',color:'',icon:''});
 
-				// GeoJSON-Layer für Verbandsgemeinden hinzufügen
-				fetch('https://jmtw-ma.github.io/suewmap/vg_suew.geojson')
-					.then(response => response.json())
-					.then(data => {
-						L.geoJSON(data, {
-							style: function (feature) {
-								return {
-									color: "#ff7800", // Farbe der Grenzen (Orange)
-									weight: 2, // Dicke der Linien
-									fillOpacity: 0.1 // Transparenz der Füllung
-								};
-							},
-							onEachFeature: function (feature, layer) {
-								if (feature.properties && feature.properties.name) {
-									// Popup mit dem Namen der Verbandsgemeinde
-									layer.bindPopup(feature.properties.name);
-									// Optional: Tooltip mit dem Namen (immer sichtbar beim Überfahren)
-									// layer.bindTooltip(feature.properties.name, { permanent: false, direction: 'center' });
-								}
+					// GeoJSON-Layer für Verbandsgemeinden hinzufügen
+					fetch('https://jmtw-ma.github.io/suewmap/vg_suew.geojson')
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Netzwerkantwort war nicht ok: ' + response.statusText);
 							}
-						}).addTo(window.gvMap); // Füge den Layer zur Karte hinzu
-					})
-					.catch(error => console.error('Fehler beim Laden des GeoJSON:', error));
+							return response.json();
+						})
+						.then(data => {
+							if (window.gvMap) {
+								L.geoJSON(data, {
+									style: function (feature) {
+										return {
+											color: "#ff7800", // Farbe der Grenzen (Orange)
+											weight: 2, // Dicke der Linien
+											fillOpacity: 0.1 // Transparenz der Füllung
+										};
+									},
+									onEachFeature: function (feature, layer) {
+										if (feature.properties && feature.properties.name) {
+											// Popup mit dem Namen der Verbandsgemeinde
+											layer.bindPopup(feature.properties.name);
+										}
+									}
+								}).addTo(window.gvMap); // Füge den Layer zur Karte hinzu
+							} else {
+								console.error('Karte (window.gvMap) ist nicht initialisiert.');
+							}
+						})
+						.catch(error => console.error('Fehler beim Laden des GeoJSON:', error));
 
-				GV_Finish_Map();
+					GV_Finish_Map();
+				}, 1000); // Warte 1 Sekunde, um sicherzustellen, dass die Karte initialisiert ist
 			}
 			GV_Map(); // Führe die Funktion aus
 			// https://www.gpsvisualizer.com/map_input?form=leaflet&google_wpt_labels=1&google_wpt_sym=circle&units=metric&wpt_list=desc
