@@ -159,6 +159,17 @@
             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
+	map.on('move', function() {
+  	var bounds = map.getBounds();
+	var maxBounds = map.options.maxBounds;
+
+    	// Prüfe, ob die aktuellen Bounds außerhalb der maxBounds liegen
+  		 	if (!maxBounds.contains(bounds)) {
+        // Begrenze die Karte auf die maxBounds
+      			map.panInsideBounds(maxBounds, { animate: false });
+    			}
+	});
+
 
 		var Overschrift = L.divIcon({
 			className: "my-label",
