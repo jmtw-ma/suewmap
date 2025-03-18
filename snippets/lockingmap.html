@@ -1,0 +1,56 @@
+var map = L.map('map', {
+    center: [49.143621, 8.081425], // Startposition
+    zoom: 14, // Start-Zoomstufe (kann angepasst werden)
+    maxBounds: [[49.083885, 8.0745745], [49.203885, 8.3045745]], // Maximale Grenzen
+    maxBoundsViscosity: 1.0, // Harte Grenze
+    minZoom: 14, // Minimaler Zoom (kann angepasst werden)
+    maxZoom: 16, // Maximaler Zoom
+    scrollWheelZoom: true,
+    dragging: true // Verschieben erlaubt
+});
+
+// Füge OpenStreetMap-Tiles hinzu
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+// Funktion, um die Karte beim Laden auf eine bestimmte Ansicht zu locken
+function lockInitialView() {
+    var initialBounds = [
+        [49.133885, 8.0945745], // Südwestliche Ecke der initialen Ansicht
+        [49.153885, 8.1145745]  // Nordöstliche Ecke der initialen Ansicht
+    ];
+
+    // Setze die Karte beim Laden auf diese Bounds
+    map.fitBounds(initialBounds, { animate: false });
+
+    // Event-Listener für Bewegung und Zoom
+    map.on('move moveend zoomend', function() {
+        var currentBounds = map.getBounds();
+        var maxBounds = map.options.maxBounds;
+
+        // Prüfe, ob die aktuellen Bounds außerhalb der maxBounds liegen
+        if (!maxBounds.contains(currentBounds)) {
+            // Begrenze die Karte sofort auf die maxBounds
+            map.panInsideBounds(maxBounds, { animate: false });
+        }
+    });
+}
+
+// Rufe die Funktion beim Laden auf
+lockInitialView();
+
+/*
+Erklärung:
+Startansicht festlegen:
+center und zoom definieren die Startposition und Zoomstufe beim Laden.
+Alternativ kannst du mit initialBounds und map.fitBounds() eine genauere Ansicht beim Laden setzen (siehe Beispiel oben). Passe die Koordinaten in initialBounds an deine gewünschte Ansicht an.
+Bewegung und Zoom erlauben:
+dragging: true und scrollWheelZoom: true erlauben Verschieben und Zoomen innerhalb der Ansicht.
+Maximale Grenzen ohne Bounce:
+maxBounds legt die äußersten Grenzen fest (wie in deinem ursprünglichen Code).
+maxBoundsViscosity: 1.0 sorgt für eine harte Grenze.
+Der Event-Listener (move moveend zoomend) überprüft bei jeder Bewegung oder Zoom-Änderung, ob die aktuellen Bounds außerhalb der maxBounds liegen, und korrigiert die Position sofort ohne Animation (animate: false).
+Anpassung der Zoomstufen:
+minZoom und maxZoom begrenzen den Zoom-Bereich. Ich habe minZoom: 14 gesetzt, damit man nicht zu weit rauszoomen kann – passe das nach Bedarf an.
+*/
