@@ -59,10 +59,10 @@
 
 		#marker-list {
 			position: absolute;
-			top: 10px;
-			left: 87%;
+			top: 1%;
+			left: 89%;
 			background-color: rgba(255, 255, 255, 0.9);
-			padding: 10px;
+			padding: 0px;
 			border-radius: 5px;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 			z-index: 1000;
@@ -72,19 +72,16 @@
 		}
 		
 		#marker-list h3 {
-			margin: 0 0 10px 0;
+			margin: 10px 0 0px 0;
 			font-size: 15px; /* Schriftgröße auf 15px setzen */
 			font-family: "Corbel", Arial, sans-serif; /* Schriftart Corbel mit Fallback */
 			font-weight: bold; /* Optional: Fett machen */
 			color: #333;
 			text-align: center;
+			padding-bottom: 10px;
+			border-bottom: 3px solid #Ffffff;
 		}
 
-		#marker-list h3 {
-			margin: 0 0 10px 0;
-			font-size: 12px;
-			color: #333;
-		}
 
 		#marker-items {
 			list-style: none;
@@ -95,10 +92,13 @@
 		#marker-items li {
 			padding: 8px;
 			cursor: pointer;
-			border-bottom: 1px solid #ddd;
 			color: #333;
 			font-size: 10px;
 			font-family: "Corbel", Arial, sans-serif; /* Schriftart Corbel mit Fallback */
+		}
+
+		#marker-items li:not(:last-child) {
+		border-bottom: 2px solid #Ffffff;
 		}
 
 		#marker-items li:hover {
@@ -119,6 +119,18 @@
 			font-weight: bold;
 		}
 		
+		.my-label {
+			background-color: rgba(255, 255, 255, 0.1); /* Weiß mit leichter Transparenz */
+			padding: 5px; /* Abstand innerhalb des Labels */
+			text-align: center; /* Zentriert den Text */
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Leichter Schatten */
+			border-radius: 5px; /* Abgerundete Ecken */
+			font-size: 15px;
+			font-weight: bold;
+			color: #Ffffff;
+			font-family: "Corbel", Arial, sans-serif; /* Schriftart Corbel mit Fallback */
+		}
+		
     </style>
 </head>
 <body>
@@ -134,7 +146,8 @@
             zoom: 13.2,
             //maxBounds: [[49.18770, 8.052149], [49.088000, 8.297000]],
 			//maxBounds: [[49.1621543, 8.1147984], [49.089000, 8.298000]],
-			maxBounds: [[49.013885, 8.0745745], [49.203885, 8.3045745]],// Strenge Grenzen
+			//maxBounds: [[49.013885, 8.0745745], [49.203885, 8.3045745]],// Strenge Grenzen
+			maxBounds: [[49.083885, 8.0745745], [49.203885, 8.3045745]],
             minZoom: 13, // Nicht zu weit rauszoomen
             maxZoom: 16, // Sinnvoller Maximalzoom
             scrollWheelZoom: true // Mausrad erlaubt, aber durch maxBounds begrenzt
@@ -145,6 +158,14 @@
             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
+
+		var Overschrift = L.divIcon({
+			className: "my-label",
+			html: "Verbandsgemeinde Herxheim",
+			iconSize: [200, 20] // Größe des Labels anpassen
+		});
+		L.marker([49.173621, 8.18425], { icon: Overschrift }).addTo(map);	
+		
 		var defaultCenter = [49.143621, 8.081425];
 		var defaultZoom = 13.2;
 
@@ -264,15 +285,7 @@
             fillOpacity: 0.9,
             weight: 1
         }).addTo(map);
-		
-		// Benutzerdefinierte Marker als Punkt
-        // var dotIcon = L.divIcon({
-        //    className: 'custom-dot',
-		//    iconSize: [12, 12], // Größe des Punkts
-        //    iconAnchor: [6, 6], // Mitte des Punkts
-        //    popupAnchor: [0, -6] // Popup-Position relativ zum Punkt
-        //	});
-		
+			
 
 	// Array zum Speichern der Marker
 	var markers = [];
