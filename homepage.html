@@ -187,8 +187,7 @@
 
         function downloadMap(button) {
             const downloadUrl = button.parentElement.querySelector('.link-button').getAttribute('data-download-url');
-            const filename = downloadUrl.split('/').pop(); // Extrahiert den Dateinamen aus der URL
-
+            const filename = button.parentElement.querySelector('.link-button').getAttribute('data-filename'); // Nutzt das neue data-filename
             // Erstelle einen temporären Download-Link
             const link = document.createElement('a');
             link.setAttribute('href', downloadUrl);
