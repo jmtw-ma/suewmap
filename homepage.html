@@ -146,24 +146,24 @@
             <h1>teamdigital Projektname</h1>
             <ul class="link-list">
                 <li>
-                    <button class="link-button" onclick="updateMap('https://jmtw-ma.github.io/suewmap/Versuch%20SÜW%20gesamt.html', this)">Komplexe Gesamtauswertung v2</button>
-                    <button class="download-button" onclick="downloadMap('Versuch_SÜW_gesamt.html')">Download</button>
+                    <button class="link-button" data-download-url="https://raw.githubusercontent.com/jmtw-ma/suewmap/main/Versuch%20SÜW%20gesamt.html" onclick="updateMap('https://jmtw-ma.github.io/suewmap/Versuch%20SÜW%20gesamt.html', this)">Komplexe Gesamtauswertung v2</button>
+                    <button class="download-button" onclick="downloadMap(this)">Download</button>
                 </li>
                 <li>
-                    <button class="link-button" onclick="updateMap('https://jmtw-ma.github.io/suewmap/neue%20Muster%20Auswertung%20Karte%20teamdigital%20Containererfassung.html', this)">Komplexe Gesamtauswertung v1</button>
-                    <button class="download-button" onclick="downloadMap('neue_Muster_Auswertung_Karte_teamdigital_Containererfassung.html')">Download</button>
+                    <button class="link-button" data-download-url="https://raw.githubusercontent.com/jmtw-ma/suewmap/main/neue%20Muster%20Auswertung%20Karte%20teamdigital%20Containererfassung.html" onclick="updateMap('https://jmtw-ma.github.io/suewmap/neue%20Muster%20Auswertung%20Karte%20teamdigital%20Containererfassung.html', this)">Komplexe Gesamtauswertung v1</button>
+                    <button class="download-button" onclick="downloadMap(this)">Download</button>
                 </li>
                 <li>
-                    <button class="link-button" onclick="updateMap('https://jmtw-ma.github.io/suewmap/Muster%20Auswertung%20Karte%20teamdigital%20Containererfassung.html', this)">Simple Gesamtauswertung</button>
-                    <button class="download-button" onclick="downloadMap('Muster_Auswertung_Karte_teamdigital_Containererfassung.html')">Download</button>
+                    <button class="link-button" data-download-url="https://raw.githubusercontent.com/jmtw-ma/suewmap/main/Muster%20Auswertung%20Karte%20teamdigital%20Containererfassung.html" onclick="updateMap('https://jmtw-ma.github.io/suewmap/Muster%20Auswertung%20Karte%20teamdigital%20Containererfassung.html', this)">Simple Gesamtauswertung</button>
+                    <button class="download-button" onclick="downloadMap(this)">Download</button>
                 </li>
                 <li>
-                    <button class="link-button" onclick="updateMap('https://jmtw-ma.github.io/suewmap/index3.html', this)">Herxheim mit Grenzen</button>
-                    <button class="download-button" onclick="downloadMap('index3.html')">Download</button>
+                    <button class="link-button" data-download-url="https://raw.githubusercontent.com/jmtw-ma/suewmap/main/index3.html" onclick="updateMap('https://jmtw-ma.github.io/suewmap/index3.html', this)">Herxheim mit Grenzen</button>
+                    <button class="download-button" onclick="downloadMap(this)">Download</button>
                 </li>
                 <li>
-                    <button class="link-button" onclick="updateMap('https://jmtw-ma.github.io/suewmap/Muster%20Auswertung%20nur%20Herxheim.html', this)">Herxheim ohne Grenzen</button>
-                    <button class="download-button" onclick="downloadMap('Muster_Auswertung_nur_Herxheim.html')">Download</button>
+                    <button class="link-button" data-download-url="https://raw.githubusercontent.com/jmtw-ma/suewmap/main/Muster%20Auswertung%20nur%20Herxheim.html" onclick="updateMap('https://jmtw-ma.github.io/suewmap/Muster%20Auswertung%20nur%20Herxheim.html', this)">Herxheim ohne Grenzen</button>
+                    <button class="download-button" onclick="downloadMap(this)">Download</button>
                 </li>
             </ul>
         </div>
@@ -185,34 +185,21 @@
             button.classList.add('selected');
         }
 
-        function downloadMap(filename) {
-            const iframe = document.getElementById('mapIframe');
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        function downloadMap(button) {
+            const downloadUrl = button.parentElement.querySelector('.link-button').getAttribute('data-download-url');
+            const filename = downloadUrl.split('/').pop(); // Extrahiert den Dateinamen aus der URL
 
-            // Prüfe, ob der Inhalt des iframes zugänglich ist
-            if (iframeDoc) {
-                // Hole den HTML-Inhalt des iframes
-                let htmlContent = iframeDoc.documentElement.outerHTML;
+            // Erstelle einen temporären Download-Link
+            const link = document.createElement('a');
+            link.setAttribute('href', downloadUrl);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
 
-                // Erstelle einen Blob aus dem Inhalt
-                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+            // Simuliere einen Klick, um den Download zu starten
+            link.click();
 
-                // Erstelle einen temporären Download-Link
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', filename);
-                document.body.appendChild(link);
-
-                // Simuliere einen Klick, um den Download zu starten
-                link.click();
-
-                // Entferne den temporären Link
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            } else {
-                alert('Der Inhalt kann aufgrund von Sicherheitsbeschränkungen nicht heruntergeladen werden. Bitte lade die Datei direkt von der Quelle herunter.');
-            }
+            // Entferne den temporären Link
+            document.body.removeChild(link);
         }
     </script>
 </body>
