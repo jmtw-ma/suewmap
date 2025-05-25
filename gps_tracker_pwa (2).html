@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Tracker Pro</title>
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="#" id="manifest-placeholder">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 10px;
+            user-select: none;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .status-card.tracking {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        .status-card.error {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+        
+        .status-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .status-detail {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-start {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-stop {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #fbbf24;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        .coords-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .error-msg {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .permission-help {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .permission-help h4 {
+            margin-bottom: 8px;
+            color: #93c5fd;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .recording-indicator {
+            animation: blink 1s infinite;
+        }
+        
+        .install-prompt {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 GPS Tracker Pro</h1>
+        
+        <div id="installPrompt" class="install-prompt hidden">
+            💡 Tipp: Füge diese App zu deinem Homescreen hinzu!
+        </div>
+        
+        <div id="statusCard" class="status-card">
+            <div id="statusText" class="status-text">GPS wird initialisiert...</div>
+            <div id="statusDetail" class="status-detail">Bitte warten</div>
+        </div>
+        
+        <button id="startBtn" class="btn btn-start">
+            ▶️ Tracking starten
+        </button>
+        
+        <button id="stopBtn" class="btn btn-stop hidden">
+            ⏹️ Tracking stoppen
+        </button>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div id="pointCount" class="stat-value">0</div>
+                <div class="stat-label">Messpunkte</div>
+            </div>
+            <div class="stat-item">
+                <div id="duration" class="stat-value">00:00</div>
+                <div class="stat-label">Dauer</div>
+            </div>
+        </div>
+        
+        <div id="coordsDisplay" class="coords-display">
+            🌍 Warte auf GPS-Signal...
+        </div>
+        
+        <div id="errorMsg" class="error-msg hidden"></div>
+        
+        <div id="permissionHelp" class="permission-help hidden">
+            <h4>📍 GPS-Berechtigung erforderlich:</h4>
+            1. Tippe auf das 🔒 Schloss-Symbol in der Adressleiste<br>
+            2. Erlaube "Standort" für diese Seite<br>
+            3. Aktiviere GPS in den Geräteeinstellungen
+        </div>
+        
+        <button id="exportBtn" class="btn btn-secondary">
+            💾 Trackdaten herunterladen
+        </button>
+        
+        <button id="clearBtn" class="btn btn-warning">
+            🗑️ Alle Daten löschen
+        </button>
+        
+        <button id="testGPSBtn" class="btn btn-secondary">
+            🧪 GPS-Test starten
+        </button>
+    </div>
+
+    <script>
+        // Manifest dynamically erstellen
+        const manifestBlob = new Blob([JSON.stringify({
+            "name": "GPS Tracker Pro",
+            "short_name": "GPS Tracker",
+            "start_url": "./",
+            "display": "standalone",
+            "background_color": "#2563eb",
+            "theme_color": "#2563eb",
+            "orientation": "portrait",
+            "icons": [{
+                "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTkyIDE5MiI+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iOTYiIGZpbGw9IiMyNTYzZWIiLz48cGF0aCBkPSJNOTYgNDhjLTI2LjUgMC00OCAyMS41LTQ4IDQ4IDAgMjYuNSAyMS41IDQ4IDQ4IDQ4czQ4LTIxLjUgNDgtNDhjMC0yNi41LTIxLjUtNDgtNDgtNDh6bTAgNzJjLTEzLjMgMC0yNC0xMC43LTI0LTI0czEwLjctMjQgMjQtMjQgMjQgMTAuNyAyNCAyNC0xMC43IDI0LTI0IDI0eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==",
+                "sizes": "192x192",
+                "type": "image/svg+xml"
+            }]
+        })], { type: 'application/json' });
+        
+        document.getElementById('manifest-placeholder').href = URL.createObjectURL(manifestBlob);
+
+        class AdvancedGPSTracker {
+            constructor() {
+                this.isTracking = false;
+                this.trackingInterval = null;
+                this.startTime = null;
+                this.durationTimer = null;
+                this.watchId = null;
+                this.currentPosition = null;
+                this.trackPoints = [];
+                this.gpsSupported = 'geolocation' in navigator;
+                this.permissionGranted = false;
+                
+                this.initElements();
+                this.loadSavedData();
+                this.bindEvents();
+                this.checkGPSSupport();
+                this.showInstallPrompt();
+            }
+            
+            initElements() {
+                this.elements = {
+                    statusCard: document.getElementById('statusCard'),
+                    statusText: document.getElementById('statusText'),
+                    statusDetail: document.getElementById('statusDetail'),
+                    startBtn: document.getElementById('startBtn'),
+                    stopBtn: document.getElementById('stopBtn'),
+                    pointCount: document.getElementById('pointCount'),
+                    duration: document.getElementById('duration'),
+                    coordsDisplay: document.getElementById('coordsDisplay'),
+                    errorMsg: document.getElementById('errorMsg'),
+                    permissionHelp: document.getElementById('permissionHelp'),
+                    exportBtn: document.getElementById('exportBtn'),
+                    clearBtn: document.getElementById('clearBtn'),
+                    testGPSBtn: document.getElementById('testGPSBtn'),
+                    installPrompt: document.getElementById('installPrompt')
+                };
+            }
+            
+            loadSavedData() {
+                const saved = localStorage.getItem('gps_tracker_data');
+                if (saved) {
+                    try {
+                        this.trackPoints = JSON.parse(saved);
+                        this.updatePointCount();
+                    } catch (e) {
+                        console.warn('Fehler beim Laden gespeicherter Daten:', e);
+                        this.trackPoints = [];
+                    }
+                }
+            }
+            
+            saveData() {
+                try {
+                    localStorage.setItem('gps_tracker_data', JSON.stringify(this.trackPoints));
+                } catch (e) {
+                    this.showError('Speicher voll! Exportiere oder lösche alte Daten.');
+                }
+            }
+            
+            bindEvents() {
+                this.elements.startBtn.addEventListener('click', () => this.startTracking());
+                this.elements.stopBtn.addEventListener('click', () => this.stopTracking());
+                this.elements.exportBtn.addEventListener('click', () => this.exportData());
+                this.elements.clearBtn.addEventListener('click', () => this.clearAllData());
+                this.elements.testGPSBtn.addEventListener('click', () => this.testGPS());
+            }
+            
+            showInstallPrompt() {
+                let deferredPrompt;
+                
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    this.elements.installPrompt.classList.remove('hidden');
+                    
+                    this.elements.installPrompt.addEventListener('click', () => {
+                        this.elements.installPrompt.classList.add('hidden');
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then((choiceResult) => {
+                            deferredPrompt = null;
+                        });
+                    });
+                });
+            }
+            
+            checkGPSSupport() {
+                if (!this.gpsSupported) {
+                    this.updateStatus('error', 'GPS nicht unterstützt', 'Dein Browser/Gerät unterstützt kein GPS');
+                    this.elements.startBtn.disabled = true;
+                    this.elements.testGPSBtn.disabled = true;
+                    return;
+                }
+                
+                this.updateStatus('ready', 'GPS bereit', 'Tippe auf "Tracking starten"');
+            }
+            
+            async testGPS() {
+                this.updateStatus('testing', 'GPS-Test läuft...', 'Prüfe GPS-Funktion');
+                this.hideError();
+                this.elements.permissionHelp.classList.add('hidden');
+                
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                };
+                
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+                    });
+                    
+                    this.currentPosition = position;
+                    this.permissionGranted = true;
+                    this.updateCoordinateDisplay(position);
+                    this.updateStatus('success', 'GPS funktioniert! ✅', 
+                        `Genauigkeit: ±${Math.round(position.coords.accuracy)}m`);
+                    
+                } catch (error) {
+                    this.handleGPSError(error);
+                }
+            }
+            
+            startTracking() {
+                if (!this.gpsSupported) {
+                    this.showError('GPS wird von diesem Gerät nicht unterstützt');
+                    return;
+                }
+                
+                this.isTracking = true;
+                this.startTime = Date.now();
+                this.hideError();
+                this.elements.permissionHelp.classList.add('hidden');
+                
+                this.updateUI();
+                this.updateStatus('tracking', 'Tracking aktiv 🔴', 'Speichere GPS-Daten...');
+                
+                // Hochgenaue GPS-Optionen
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 1000
+                };
+                
+                // Kontinuierliches GPS-Tracking
+                this.watchId = navigator.geolocation.watchPosition(
+                    (position) => this.handlePositionUpdate(position),
+                    (error) => this.handleGPSError(error),
+                    options
+                );
+                
+                // Sekundentakt für Datenspeicherung
+                this.trackingInterval = setInterval(() => {
+                    if (this.currentPosition) {
+                        this.saveTrackPoint(this.currentPosition);
+                    }
+                }, 1000);
+                
+                // Timer für Anzeige
+                this.durationTimer = setInterval(() => {
+                    this.updateDuration();
+                }, 1000);
+            }
+            
+            stopTracking() {
+                this.isTracking = false;
+                
+                if (this.watchId !== null) {
+                    navigator.geolocation.clearWatch(this.watchId);
+                    this.watchId = null;
+                }
+                
+                if (this.trackingInterval) {
+                    clearInterval(this.trackingInterval);
+                    this.trackingInterval = null;
+                }
+                
+                if (this.durationTimer) {
+                    clearInterval(this.durationTimer);
+                    this.durationTimer = null;
+                }
+                
+                this.updateUI();
+                this.updateStatus('stopped', 'Tracking gestoppt', 
+                    `${this.trackPoints.length} Punkte erfasst`);
+            }
+            
+            handlePositionUpdate(position) {
+                this.currentPosition = position;
+                this.permissionGranted = true;
+                this.updateCoordinateDisplay(position);
+                
+                if (this.isTracking) {
+                    this.updateStatus('tracking', 'Tracking aktiv 🔴', 
+                        `Genauigkeit: ±${Math.round(position.coords.accuracy)}m`);
+                }
+            }
+            
+            handleGPSError(error) {
+                let errorMsg = 'GPS-Fehler: ';
+                let helpText = '';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg += 'Zugriff verweigert';
+                        helpText = 'GPS-Berechtigung erforderlich';
+                        this.elements.permissionHelp.classList.remove('hidden');
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg += 'Position nicht verfügbar';
+                        helpText = 'Gehe nach draußen für besseren GPS-Empfang';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg += 'Zeitüberschreitung';
+                        helpText = 'GPS-Signal zu schwach, versuche es erneut';
+                        break;
+                    default:
+                        errorMsg += 'Unbekannter Fehler';
+                        helpText = 'Versuche einen GPS-Test';
+                        break;
+                }
+                
+                this.showError(errorMsg);
+                this.updateStatus('error', errorMsg, helpText);
+                
+                if (this.isTracking) {
+                    this.stopTracking();
+                }
+            }
+            
+            saveTrackPoint(position) {
+                const trackPoint = {
+                    id: Date.now() + Math.random(),
+                    timestamp: Date.now(),
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    altitude: position.coords.altitude,
+                    altitudeAccuracy: position.coords.altitudeAccuracy,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed
+                };
+                
+                this.trackPoints.push(trackPoint);
+                this.saveData();
+                this.updatePointCount();
+            }
+            
+            updateCoordinateDisplay(position) {
+                const lat = position.coords.latitude.toFixed(6);
+                const lng = position.coords.longitude.toFixed(6);
+                const acc = Math.round(position.coords.accuracy);
+                const alt = position.coords.altitude ? Math.round(position.coords.altitude) + 'm' : 'N/A';
+                const speed = position.coords.speed ? Math.round(position.coords.speed * 3.6) + ' km/h' : '0 km/h';
+                
+                this.elements.coordsDisplay.innerHTML = `
+                    📍 Lat: ${lat}°<br>
+                    📍 Lng: ${lng}°<br>
+                    🎯 Genauigkeit: ±${acc}m<br>
+                    ⛰️ Höhe: ${alt}<br>
+                    🚗 Geschwindigkeit: ${speed}
+                `;
+            }
+            
+            updateDuration() {
+                if (!this.startTime) return;
+                
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                
+                this.elements.duration.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            updatePointCount() {
+                this.elements.pointCount.textContent = this.trackPoints.length;
+            }
+            
+            updateStatus(type, text, detail = '') {
+                this.elements.statusText.textContent = text;
+                this.elements.statusDetail.textContent = detail;
+                
+                this.elements.statusCard.className = `status-card ${type}`;
+                
+                if (type === 'tracking') {
+                    this.elements.statusCard.classList.add('recording-indicator');
+                } else {
+                    this.elements.statusCard.classList.remove('recording-indicator');
+                }
+            }
+            
+            updateUI() {
+                if (this.isTracking) {
+                    this.elements.startBtn.classList.add('hidden');
+                    this.elements.stopBtn.classList.remove('hidden');
+                } else {
+                    this.elements.startBtn.classList.remove('hidden');
+                    this.elements.stopBtn.classList.add('hidden');
+                }
+            }
+            
+            showError(message) {
+                this.elements.errorMsg.textContent = message;
+                this.elements.errorMsg.classList.remove('hidden');
+                setTimeout(() => this.hideError(), 5000);
+            }
+            
+            hideError() {
+                this.elements.errorMsg.classList.add('hidden');
+            }
+            
+            exportData() {
+                if (this.trackPoints.length === 0) {
+                    this.showError('Keine Daten zum Exportieren vorhanden');
+                    return;
+                }
+                
+                const exportData = {
+                    metadata: {
+                        exportTime: new Date().toISOString(),
+                        totalPoints: this.trackPoints.length,
+                        appVersion: "GPS Tracker Pro 2.0"
+                    },
+                    trackPoints: this.trackPoints
+                };
+                
+                const jsonStr = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                
+                // Erstelle Download-Link
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `gps-track-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+                a.style.display = 'none';
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                // Cleanup
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                
+                this.updateStatus('success', 'Export erfolgreich! ✅', 
+                    `${this.trackPoints.length} Punkte exportiert`);
+            }
+            
+            clearAllData() {
+                const confirmed = confirm(
+                    `Alle ${this.trackPoints.length} GPS-Punkte löschen?\n\n` +
+                    'Diese Aktion kann nicht rückgängig gemacht werden!'
+                );
+                
+                if (confirmed) {
+                    this.trackPoints = [];
+                    localStorage.removeItem('gps_tracker_data');
+                    this.updatePointCount();
+                    this.elements.coordsDisplay.innerHTML = '🌍 Daten gelöscht - Bereit für neues Tracking';
+                    this.updateStatus('ready', 'Daten gelöscht ✅', 'Bereit für neues Tracking');
+                }
+            }
+        }
+        
+        // App initialisieren
+        document.addEventListener('DOMContentLoaded', () => {
+            window.gpsTracker = new AdvancedGPSTracker();
+        });
+        
+        // Service Worker für Offline-Betrieb
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'gps-tracker-v2';
+                
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then(cache => {
+                            return cache.addAll(['/']);
+                        })
+                    );
+                });
+                
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => response || fetch(event.request))
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl)
+                .then(reg => console.log('Service Worker registriert'))
+                .catch(err => console.log('Service Worker Fehler:', err));
+        }
+    </script>
+</body>
+</html>
